@@ -1,15 +1,15 @@
 services:
   cup-pool:
     build:
-      context: ../..
-      dockerfile: apps/cup-pool/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     container_name: delivery-cruzeiro-cup-pool
-    command: pnpm run dev
+    command: npm run dev
     ports:
       - '5176:5176'
     volumes:
-      - ../..:/workspace
-      - cup-pool-node-modules:/workspace/node_modules
+      - .:/app
+      - cup-pool-node-modules:/app/node_modules
     environment:
       CI: 'true'
       PNPM_CONFIG_CONFIRM_MODULES_PURGE: 'false'

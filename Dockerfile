@@ -1,19 +1,12 @@
 FROM node:22-alpine AS base
 
-WORKDIR /workspace
+WORKDIR /app
 
-RUN corepack enable
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY shared-types ./shared-types
-COPY apps/cup-pool ./apps/cup-pool
-
-RUN pnpm install --filter @delivery-cruzeiro/cup-pool... --frozen-lockfile
-
-WORKDIR /workspace/apps/cup-pool
-
-RUN pnpm run build
+COPY package.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
 EXPOSE 4176
 
-CMD ["pnpm", "run", "preview"]
+CMD ["npm", "run", "preview"]

@@ -7,9 +7,6 @@
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "paths": {
-      "@delivery-cruzeiro/types": ["../../shared-types/src/index.ts"]
-    },
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createCupPollGuessSchema } from '@delivery-cruzeiro/types';
+import { createCupPollGuessSchema } from './cup-poll.schema';
 
 describe('createCupPollGuessSchema', () => {
 	it('accepts a valid cup poll guess', () => {

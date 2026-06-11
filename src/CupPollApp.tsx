@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react';
-import { createCupPollGuessSchema } from '@delivery-cruzeiro/types';
+import { createCupPollGuessSchema } from './cup-poll.schema';
 
 type SubmitState =
 	| { type: 'idle'; message: string }
