@@ -12,6 +12,8 @@ RUN pnpm install --filter @delivery-cruzeiro/cup-pool... --frozen-lockfile
 
 WORKDIR /workspace/apps/cup-pool
 
-EXPOSE 5176
+RUN pnpm run build
 
-CMD ["pnpm", "run", "dev"]
+EXPOSE 4176
+
+CMD ["pnpm", "run", "preview"]

@@ -11,6 +11,24 @@ const initialSubmitState: SubmitState = {
 	type: 'idle',
 };
 
+const productionAPIURL = 'https://backend-api-yynv.onrender.com';
+const defaultAPIURL = import.meta.env.PROD ? productionAPIURL : '';
+
+function buildAPIURL(path: `/api/${string}`) {
+	const configuredAPIURL = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
+	const baseURL = (configuredAPIURL || defaultAPIURL).replace(/\/$/, '');
+
+	if (!baseURL) {
+		return path;
+	}
+
+	if (baseURL.endsWith('/api')) {
+		return `${baseURL}${path.replace('/api', '')}`;
+	}
+
+	return `${baseURL}${path}`;
+}
+
 function parseScore(value: string) {
 	return Number.parseInt(value || '0', 10);
 }
@@ -57,7 +75,7 @@ export function CupPollApp() {
 		setSubmitState(initialSubmitState);
 
 		try {
-			const response = await fetch('/api/cup-poll/guesses', {
+			const response = await fetch(buildAPIURL('/api/cup-poll/guesses'), {
 				body: JSON.stringify(parsedPayload.data),
 				credentials: 'include',
 				headers: {

@@ -11,8 +11,8 @@ on:
 
 env:
   NODE_VERSION: '22'
-  APP_NAME: cup-poll
-  IMAGE_NAME: delivery-cruzeiro/cup-poll
+  APP_NAME: cup-pool
+  IMAGE_NAME: delivery-cruzeiro/cup-pool
 
 jobs:
   test:
