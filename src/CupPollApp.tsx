@@ -122,64 +122,10 @@ export function CupPollApp() {
 					<span className="poll-eyebrow">Palpite Certo</span>
 					<h1 id="poll-title">Brasil x Marrocos</h1>
 					<p>
-						Informe seu palpite do jogo Brasil e Marrocos e concorra a um lanche gratuito
-						do Pastel do Cruzeiro.
+						Palpites encerrados, volte depois para o próximo jogo.
 					</p>
 				</div>
 
-				<form className="poll-form" onSubmit={handleSubmit}>
-					<label className="poll-field">
-						<span>Instagram</span>
-						<input
-							autoComplete="off"
-							inputMode="text"
-							onChange={event => setInstagramHandle(event.target.value)}
-							placeholder="@nome-teste"
-							type="text"
-							value={instagramHandle}
-						/>
-					</label>
-
-					<div className="score-field" aria-label="Placar do jogo">
-						<label className="score-input">
-							<span aria-hidden="true">🇧🇷</span>
-							<input
-								aria-label="Gols do Brasil"
-								inputMode="numeric"
-								min="0"
-								onChange={event => setBrScore(normalizeScoreInput(event.target.value))}
-								pattern="[0-9]*"
-								placeholder="0"
-								type="text"
-								value={brScore}
-							/>
-						</label>
-						<strong className="score-separator">X</strong>
-						<label className="score-input">
-							<input
-								aria-label="Gols do Marrocos"
-								inputMode="numeric"
-								min="0"
-								onChange={event => setMrScore(normalizeScoreInput(event.target.value))}
-								pattern="[0-9]*"
-								placeholder="0"
-								type="text"
-								value={mrScore}
-							/>
-							<span aria-hidden="true">🇲🇦</span>
-						</label>
-					</div>
-
-					<button className="submit-button" disabled={isSubmitting} type="submit">
-						{isSubmitting ? 'Enviando...' : 'Enviar palpite'}
-					</button>
-
-					{submitState.message ? (
-						<p className={`form-message form-message--${submitState.type}`} role="status">
-							{submitState.message}
-						</p>
-					) : null}
-				</form>
 			</section>
 		</main>
 	);
