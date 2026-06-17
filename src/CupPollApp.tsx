@@ -175,33 +175,47 @@ export function CupPollApp() {
 					</label>
 
 					<div className="score-field" aria-label="Placar do jogo">
-						<label className="score-input">
-							<span aria-hidden="true">BR</span>
-							<input
-								aria-label="Gols do Brasil"
-								inputMode="numeric"
-								min="0"
-								onChange={event => setBrScore(normalizeScoreInput(event.target.value))}
-								pattern="[0-9]*"
-								placeholder="0"
-								type="text"
-								value={brScore}
-							/>
-						</label>
+						<div className="score-team score-team--home">
+							<span className="score-flag" aria-hidden="true">
+								🇧🇷
+							</span>
+							<label className="score-input">
+								<span className="score-code" aria-hidden="true">
+									BR
+								</span>
+								<input
+									aria-label="Gols do Brasil"
+									inputMode="numeric"
+									min="0"
+									onChange={event => setBrScore(normalizeScoreInput(event.target.value))}
+									pattern="[0-9]*"
+									placeholder="0"
+									type="text"
+									value={brScore}
+								/>
+							</label>
+						</div>
 						<strong className="score-separator">X</strong>
-						<label className="score-input">
-							<input
-								aria-label="Gols do Haiti"
-								inputMode="numeric"
-								min="0"
-								onChange={event => setHtScore(normalizeScoreInput(event.target.value))}
-								pattern="[0-9]*"
-								placeholder="0"
-								type="text"
-								value={htScore}
-							/>
-							<span aria-hidden="true">HT</span>
-						</label>
+						<div className="score-team score-team--away">
+							<label className="score-input">
+								<input
+									aria-label="Gols do Haiti"
+									inputMode="numeric"
+									min="0"
+									onChange={event => setHtScore(normalizeScoreInput(event.target.value))}
+									pattern="[0-9]*"
+									placeholder="0"
+									type="text"
+									value={htScore}
+								/>
+								<span className="score-code" aria-hidden="true">
+									HT
+								</span>
+							</label>
+							<span className="score-flag" aria-hidden="true">
+								🇭🇹
+							</span>
+						</div>
 					</div>
 
 					<button className="submit-button" disabled={isSubmitting} type="submit">

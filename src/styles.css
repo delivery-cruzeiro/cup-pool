@@ -232,8 +232,25 @@ input {
 .score-field {
 	align-items: center;
 	display: grid;
-	gap: 12px;
+	gap: 10px;
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.score-team {
+	align-items: center;
+	display: flex;
+	gap: 8px;
+	min-width: 0;
+}
+
+.score-team--away {
+	justify-content: flex-end;
+}
+
+.score-flag {
+	flex: 0 0 auto;
+	font-size: 30px;
+	line-height: 1;
 }
 
 .score-input {
@@ -242,14 +259,18 @@ input {
 	border: 1px solid rgba(62, 28, 16, 0.18);
 	border-radius: 16px;
 	display: flex;
-	gap: 8px;
+	flex: 1 1 auto;
+	gap: 7px;
 	justify-content: center;
+	min-width: 0;
 	min-height: 64px;
-	padding: 8px;
+	padding: 8px 7px;
 }
 
-.score-input span {
-	font-size: 28px;
+.score-code {
+	color: var(--theme-color-accent);
+	font-size: 18px;
+	font-weight: 900;
 	line-height: 1;
 }
 
@@ -327,6 +348,28 @@ input {
 	}
 
 	.score-field {
-		gap: 8px;
+		gap: 6px;
+	}
+
+	.score-team {
+		gap: 5px;
+	}
+
+	.score-flag {
+		font-size: 24px;
+	}
+
+	.score-input {
+		gap: 5px;
+		min-height: 58px;
+		padding: 6px 5px;
+	}
+
+	.score-code {
+		font-size: 16px;
+	}
+
+	.score-input input {
+		width: 40px;
 	}
 }
