@@ -239,18 +239,11 @@ input {
 .score-team {
 	align-items: center;
 	display: flex;
-	gap: 8px;
 	min-width: 0;
 }
 
 .score-team--away {
 	justify-content: flex-end;
-}
-
-.score-flag {
-	flex: 0 0 auto;
-	font-size: 30px;
-	line-height: 1;
 }
 
 .score-input {
@@ -265,6 +258,18 @@ input {
 	min-width: 0;
 	min-height: 64px;
 	padding: 8px 7px;
+}
+
+.score-country {
+	align-items: center;
+	display: inline-flex;
+	flex: 0 0 auto;
+	gap: 5px;
+}
+
+.score-flag {
+	font-size: 24px;
+	line-height: 1;
 }
 
 .score-code {
@@ -338,6 +343,24 @@ input {
 	color: var(--theme-color-secondary);
 }
 
+@media (max-width: 520px) {
+	.poll-help {
+		left: 16px;
+		right: 16px;
+	}
+
+	.poll-help__item {
+		position: static;
+	}
+
+	.poll-tooltip {
+		left: 16px;
+		right: 16px;
+		top: 64px;
+		width: auto;
+	}
+}
+
 @media (max-width: 420px) {
 	.cup-poll-page {
 		padding: 16px;
@@ -351,12 +374,8 @@ input {
 		gap: 6px;
 	}
 
-	.score-team {
-		gap: 5px;
-	}
-
 	.score-flag {
-		font-size: 24px;
+		font-size: 20px;
 	}
 
 	.score-input {

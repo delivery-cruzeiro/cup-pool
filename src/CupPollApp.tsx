@@ -176,12 +176,10 @@ export function CupPollApp() {
 
 					<div className="score-field" aria-label="Placar do jogo">
 						<div className="score-team score-team--home">
-							<span className="score-flag" aria-hidden="true">
-								🇧🇷
-							</span>
 							<label className="score-input">
-								<span className="score-code" aria-hidden="true">
-									BR
+								<span className="score-country" aria-hidden="true">
+									<span className="score-flag">🇧🇷</span>
+									<span className="score-code">BR</span>
 								</span>
 								<input
 									aria-label="Gols do Brasil"
@@ -208,13 +206,11 @@ export function CupPollApp() {
 									type="text"
 									value={htScore}
 								/>
-								<span className="score-code" aria-hidden="true">
-									HT
+								<span className="score-country" aria-hidden="true">
+									<span className="score-code">HT</span>
+									<span className="score-flag">🇭🇹</span>
 								</span>
 							</label>
-							<span className="score-flag" aria-hidden="true">
-								🇭🇹
-							</span>
 						</div>
 					</div>
 
