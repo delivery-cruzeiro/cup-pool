@@ -50,7 +50,7 @@ function normalizeInstagramHandle(value: string) {
 export function CupPollApp() {
 	const [instagramHandle, setInstagramHandle] = useState('');
 	const [brScore, setBrScore] = useState('');
-	const [mrScore, setMrScore] = useState('');
+	const [htScore, setHtScore] = useState('');
 	const [submitState, setSubmitState] = useState<SubmitState>(initialSubmitState);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +59,7 @@ export function CupPollApp() {
 		const payload = {
 			brScore: parseScore(brScore),
 			instagramHandle: normalizeInstagramHandle(instagramHandle).toLowerCase(),
-			mrScore: parseScore(mrScore),
+			mrScore: parseScore(htScore),
 		};
 		const parsedPayload = createCupPollGuessSchema.safeParse(payload);
 
@@ -104,7 +104,7 @@ export function CupPollApp() {
 			});
 			setInstagramHandle('');
 			setBrScore('');
-			setMrScore('');
+			setHtScore('');
 		} catch {
 			setSubmitState({
 				message: 'Nao foi possivel conectar ao servidor.',
@@ -118,14 +118,102 @@ export function CupPollApp() {
 	return (
 		<main className="cup-poll-page">
 			<section className="poll-card" aria-labelledby="poll-title">
+				<div className="poll-help" aria-label="Informações da promoção">
+					<div className="poll-help__item">
+						<span className="poll-help__label">Regras</span>
+						<button className="poll-help__trigger" type="button" aria-label="Ver regras">
+							?
+						</button>
+						<div className="poll-tooltip" role="tooltip">
+							<strong>Regras:</strong>
+							<span>1 - Seguir o @pasteldocruzeiro no instagram</span>
+							<span>
+								2 - O primeiro a palpitar o resultado corretamente irá ganhar o prêmio,
+								em seguida será feito um sorteio com os demais palpites corretos para
+								definir outro ganhador
+							</span>
+						</div>
+					</div>
+
+					<div className="poll-help__item">
+						<span className="poll-help__label">Premiação</span>
+						<button className="poll-help__trigger" type="button" aria-label="Ver premiação">
+							?
+						</button>
+						<div className="poll-tooltip poll-tooltip--right" role="tooltip">
+							<span>3 - pastéis do cruzeiro grande</span>
+							<span>1 - pastel baby duas metades</span>
+							<span>1 - Guaraná litro</span>
+							<strong>
+								Entre em contato com o instagram do pastel do cruzeiro para marcar o dia
+								de reivindicar seu prêmio!
+							</strong>
+						</div>
+					</div>
+				</div>
+
 				<div className="poll-card__header">
 					<span className="poll-eyebrow">Palpite Certo</span>
-					<h1 id="poll-title">Brasil x Marrocos</h1>
+					<h1 id="poll-title">Brasil x Haiti</h1>
 					<p>
-						Palpites encerrados, volte depois para o próximo jogo.
+						Informe seu palpite do jogo Brasil e Haiti e concorra a um lanche gratuito
+						do Pastel do Cruzeiro.
 					</p>
 				</div>
 
+				<form className="poll-form" onSubmit={handleSubmit}>
+					<label className="poll-field">
+						<span>Instagram</span>
+						<input
+							autoComplete="off"
+							inputMode="text"
+							onChange={event => setInstagramHandle(event.target.value)}
+							placeholder="@nome-teste"
+							type="text"
+							value={instagramHandle}
+						/>
+					</label>
+
+					<div className="score-field" aria-label="Placar do jogo">
+						<label className="score-input">
+							<span aria-hidden="true">BR</span>
+							<input
+								aria-label="Gols do Brasil"
+								inputMode="numeric"
+								min="0"
+								onChange={event => setBrScore(normalizeScoreInput(event.target.value))}
+								pattern="[0-9]*"
+								placeholder="0"
+								type="text"
+								value={brScore}
+							/>
+						</label>
+						<strong className="score-separator">X</strong>
+						<label className="score-input">
+							<input
+								aria-label="Gols do Haiti"
+								inputMode="numeric"
+								min="0"
+								onChange={event => setHtScore(normalizeScoreInput(event.target.value))}
+								pattern="[0-9]*"
+								placeholder="0"
+								type="text"
+								value={htScore}
+							/>
+							<span aria-hidden="true">HT</span>
+						</label>
+					</div>
+
+					<button className="submit-button" disabled={isSubmitting} type="submit">
+						{isSubmitting ? 'Enviando...' : 'Enviar palpite'}
+					</button>
+
+					{submitState.message ? (
+						<p className={`form-message form-message--${submitState.type}`} role="status">
+							{submitState.message}
+						</p>
+					) : null}
+				</form>
 			</section>
 		</main>
 	);
