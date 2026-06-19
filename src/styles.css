@@ -77,6 +77,10 @@ input {
 	z-index: 1;
 }
 
+.poll-card--closed {
+	padding: clamp(24px, 5vw, 40px);
+}
+
 .poll-help {
 	align-items: center;
 	display: flex;
