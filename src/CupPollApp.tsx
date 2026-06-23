@@ -13,7 +13,7 @@ const initialSubmitState: SubmitState = {
 
 const productionAPIURL = 'https://backend-api-yynv.onrender.com';
 const defaultAPIURL = import.meta.env.PROD ? productionAPIURL : '';
-const pollClosesAt = new Date('2026-06-20T00:30:00.000Z').getTime();
+const pollClosesAt = new Date('2026-06-24T19:00:00-03:00').getTime();
 
 function hasPollClosed() {
 	return Date.now() >= pollClosesAt;
@@ -55,7 +55,7 @@ function normalizeInstagramHandle(value: string) {
 export function CupPollApp() {
 	const [instagramHandle, setInstagramHandle] = useState('');
 	const [brScore, setBrScore] = useState('');
-	const [htScore, setHtScore] = useState('');
+	const [scScore, setScScore] = useState('');
 	const [submitState, setSubmitState] = useState<SubmitState>(initialSubmitState);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isPollClosed, setIsPollClosed] = useState(() => hasPollClosed());
@@ -84,7 +84,7 @@ export function CupPollApp() {
 		const payload = {
 			brScore: parseScore(brScore),
 			instagramHandle: normalizeInstagramHandle(instagramHandle).toLowerCase(),
-			mrScore: parseScore(htScore),
+			scScore: parseScore(scScore),
 		};
 		const parsedPayload = createCupPollGuessSchema.safeParse(payload);
 
@@ -129,7 +129,7 @@ export function CupPollApp() {
 			});
 			setInstagramHandle('');
 			setBrScore('');
-			setHtScore('');
+			setScScore('');
 		} catch {
 			setSubmitState({
 				message: 'Nao foi possivel conectar ao servidor.',
@@ -184,12 +184,12 @@ export function CupPollApp() {
 
 				<div className="poll-card__header">
 					<span className="poll-eyebrow">Palpite Certo</span>
-					<h1 id="poll-title">Brasil x Haiti</h1>
+					<h1 id="poll-title">Brasil x Escócia</h1>
 					{isPollClosed ? (
 						<p>Palpites encerrados, volte depois para o próximo jogo.</p>
 					) : (
 						<p>
-							Informe seu palpite do jogo Brasil e Haiti e concorra a um lanche gratuito
+							Informe seu palpite do jogo Brasil e Escócia e concorra a um lanche gratuito
 							do Pastel do Cruzeiro.
 						</p>
 					)}
@@ -232,18 +232,18 @@ export function CupPollApp() {
 							<div className="score-team score-team--away">
 								<label className="score-input">
 									<input
-										aria-label="Gols do Haiti"
+										aria-label="Gols da Escócia"
 										inputMode="numeric"
 										min="0"
-										onChange={event => setHtScore(normalizeScoreInput(event.target.value))}
+										onChange={event => setScScore(normalizeScoreInput(event.target.value))}
 										pattern="[0-9]*"
 										placeholder="0"
 										type="text"
-										value={htScore}
+										value={scScore}
 									/>
 									<span className="score-country" aria-hidden="true">
-										<span className="score-code">HT</span>
-										<span className="score-flag">🇭🇹</span>
+										<span className="score-code">SC</span>
+										<span className="score-flag">🏴</span>
 									</span>
 								</label>
 							</div>
