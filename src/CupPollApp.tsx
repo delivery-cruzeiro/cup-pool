@@ -30,7 +30,7 @@ const initialQueryState: QueryState = {
 
 const productionAPIURL = 'https://backend-api-yynv.onrender.com';
 const defaultAPIURL = import.meta.env.PROD ? productionAPIURL : '';
-const pollClosesAt = new Date('2026-06-24T19:00:00-03:00').getTime();
+const pollClosesAt = new Date('2026-06-29T14:00:00-03:00').getTime();
 const localGuessesStorageKey = 'cup-poll-guesses';
 
 function hasPollClosed() {
@@ -109,7 +109,7 @@ export function CupPollApp() {
 	const [activeTab, setActiveTab] = useState<PollTab>('guess');
 	const [instagramHandle, setInstagramHandle] = useState('');
 	const [brScore, setBrScore] = useState('');
-	const [scScore, setScScore] = useState('');
+	const [jpScore, setJpScore] = useState('');
 	const [submitState, setSubmitState] = useState<SubmitState>(initialSubmitState);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [queryInstagramHandle, setQueryInstagramHandle] = useState('');
@@ -142,7 +142,7 @@ export function CupPollApp() {
 		const payload = {
 			brScore: parseScore(brScore),
 			instagramHandle: normalizeInstagramHandle(instagramHandle).toLowerCase(),
-			scScore: parseScore(scScore),
+			jpScore: parseScore(jpScore),
 		};
 		const parsedPayload = createCupPollGuessSchema.safeParse(payload);
 
@@ -191,7 +191,7 @@ export function CupPollApp() {
 			}
 			setInstagramHandle('');
 			setBrScore('');
-			setScScore('');
+			setJpScore('');
 		} catch {
 			setSubmitState({
 				message: 'Nao foi possivel conectar ao servidor.',
@@ -360,14 +360,14 @@ export function CupPollApp() {
 
 					<div className="poll-card__header">
 						<span className="poll-eyebrow">Palpite Certo</span>
-						<h1 id="poll-title">Brasil x Escocia</h1>
+						<h1 id="poll-title">Brasil x Japao</h1>
 						{activeTab === 'query' ? (
 							<p>Consulte o palpite cadastrado usando a tag do Instagram.</p>
 						) : isPollClosed ? (
 							<p>Palpites encerrados, volte depois para o proximo jogo.</p>
 						) : (
 							<p>
-								Informe seu palpite do jogo Brasil e Escocia e concorra a um lanche gratuito
+								Informe seu palpite do jogo Brasil e Japao e concorra a um lanche gratuito
 								do Pastel do Cruzeiro.
 							</p>
 						)}
@@ -417,18 +417,18 @@ export function CupPollApp() {
 								<div className="score-team score-team--away">
 									<label className="score-input">
 										<input
-											aria-label="Gols da Escocia"
+											aria-label="Gols do Japao"
 											inputMode="numeric"
 											min="0"
-											onChange={event => setScScore(normalizeScoreInput(event.target.value))}
+											onChange={event => setJpScore(normalizeScoreInput(event.target.value))}
 											pattern="[0-9]*"
 											placeholder="0"
 											type="text"
-											value={scScore}
+											value={jpScore}
 										/>
 										<span className="score-country" aria-hidden="true">
-											<span className="score-code">SC</span>
-											<span className="score-flag">SC</span>
+											<span className="score-code">JP</span>
+											<span className="score-flag">JP</span>
 										</span>
 									</label>
 								</div>
