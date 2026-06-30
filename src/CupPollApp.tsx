@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { createCupPollGuessSchema } from './cup-poll.schema';
 
 type SubmitState =
@@ -11,11 +11,25 @@ type QueryState =
 	| { type: 'success'; message: string }
 	| { type: 'error'; message: string };
 
-type PollTab = 'guess' | 'query';
+type PollTab = 'guess' | 'query' | 'results';
 
 type CupPollGuess = {
 	instagramHandle: string;
 	score: string;
+};
+
+type CupPollResult = {
+	match: string;
+	result: string;
+	'first-winner': string | null;
+	'second-winner': string | null;
+	participants: string[];
+};
+
+type ReplayState = {
+	highlightedIndex: number;
+	isRunning: boolean;
+	match: string | null;
 };
 
 const initialSubmitState: SubmitState = {
@@ -117,6 +131,17 @@ export function CupPollApp() {
 	const [queriedGuess, setQueriedGuess] = useState<CupPollGuess | null>(null);
 	const [isQuerying, setIsQuerying] = useState(false);
 	const [isPollClosed, setIsPollClosed] = useState(() => hasPollClosed());
+	const [pollResults, setPollResults] = useState<CupPollResult[]>([]);
+	const [resultsError, setResultsError] = useState('');
+	const [isLoadingResults, setIsLoadingResults] = useState(false);
+	const [hasLoadedResults, setHasLoadedResults] = useState(false);
+	const [expandedMatch, setExpandedMatch] = useState<string | null>(null);
+	const [replayState, setReplayState] = useState<ReplayState>({
+		highlightedIndex: 0,
+		isRunning: false,
+		match: null,
+	});
+	const replayTimerRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (isPollClosed) {
@@ -130,6 +155,147 @@ export function CupPollApp() {
 
 		return () => window.clearTimeout(timeout);
 	}, [isPollClosed]);
+
+	useEffect(() => {
+		if (activeTab !== 'results' || hasLoadedResults || isLoadingResults) {
+			return;
+		}
+
+		let shouldIgnore = false;
+
+		async function loadResults() {
+			setIsLoadingResults(true);
+			setResultsError('');
+
+			try {
+				const response = await fetch(buildAPIURL('/api/cup-poll/results'), {
+					credentials: 'include',
+					headers: {
+						accept: 'application/json',
+						'x-requested-with': 'XMLHttpRequest',
+					},
+					method: 'GET',
+				});
+				const responsePayload = (await response.json().catch(() => null)) as
+					| CupPollResult[]
+					| { error?: string }
+					| null;
+
+				if (shouldIgnore) {
+					return;
+				}
+
+				if (!response.ok || !Array.isArray(responsePayload)) {
+					setResultsError(
+						Array.isArray(responsePayload)
+							? 'Nao foi possivel carregar os resultados.'
+							: responsePayload?.error ?? 'Nao foi possivel carregar os resultados.',
+					);
+					setHasLoadedResults(true);
+					return;
+				}
+
+				setPollResults(responsePayload);
+				setHasLoadedResults(true);
+			} catch {
+				if (!shouldIgnore) {
+					setResultsError('Nao foi possivel conectar ao servidor.');
+					setHasLoadedResults(true);
+				}
+			} finally {
+				if (!shouldIgnore) {
+					setIsLoadingResults(false);
+				}
+			}
+		}
+
+		void loadResults();
+
+		return () => {
+			shouldIgnore = true;
+		};
+	}, [activeTab, hasLoadedResults, isLoadingResults]);
+
+	useEffect(() => {
+		return () => {
+			if (replayTimerRef.current !== null) {
+				window.clearTimeout(replayTimerRef.current);
+			}
+		};
+	}, []);
+
+	function getMatchName(match: string) {
+		const teamNames: Record<string, string> = {
+			br: 'Brasil',
+			jp: 'Japao',
+		};
+		const [homeTeam, awayTeam] = match.split('-');
+
+		return `${teamNames[homeTeam] ?? homeTeam.toUpperCase()} x ${
+			teamNames[awayTeam] ?? awayTeam.toUpperCase()
+		}`;
+	}
+
+	function handleExpandResult(match: string) {
+		setExpandedMatch(currentMatch => (currentMatch === match ? null : match));
+		setReplayState({
+			highlightedIndex: 0,
+			isRunning: false,
+			match,
+		});
+		if (replayTimerRef.current !== null) {
+			window.clearTimeout(replayTimerRef.current);
+		}
+	}
+
+	function handleReplay(result: CupPollResult) {
+		if (replayTimerRef.current !== null) {
+			window.clearTimeout(replayTimerRef.current);
+		}
+
+		if (result.participants.length === 0) {
+			setReplayState({
+				highlightedIndex: 0,
+				isRunning: false,
+				match: result.match,
+			});
+			return;
+		}
+
+		const sortedWinnerIndex = result.participants.findIndex(
+			participant => participant === result['second-winner'],
+		);
+		const targetIndex = sortedWinnerIndex >= 0 ? sortedWinnerIndex : 0;
+		const totalSteps = result.participants.length + targetIndex;
+		let currentStep = 0;
+
+		setReplayState({
+			highlightedIndex: 0,
+			isRunning: totalSteps > 0,
+			match: result.match,
+		});
+
+		if (totalSteps === 0) {
+			return;
+		}
+
+		function tick() {
+			currentStep += 1;
+			const highlightedIndex = currentStep % result.participants.length;
+
+			setReplayState({
+				highlightedIndex,
+				isRunning: currentStep < totalSteps,
+				match: result.match,
+			});
+
+			if (currentStep < totalSteps) {
+				replayTimerRef.current = window.setTimeout(tick, 180);
+			}
+		}
+
+		replayTimerRef.current = window.setTimeout(tick, 320);
+	}
 
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -314,6 +480,17 @@ export function CupPollApp() {
 					>
 						Consulta de palpites
 					</button>
+					<button
+						aria-controls="poll-results-panel"
+						aria-selected={activeTab === 'results'}
+						className="poll-tab"
+						id="poll-results-tab"
+						onClick={() => setActiveTab('results')}
+						role="tab"
+						type="button"
+					>
+						Resultados dos boloes
+					</button>
 				</div>
 
 				<section
@@ -363,6 +540,8 @@ export function CupPollApp() {
 						<h1 id="poll-title">Brasil x Japao</h1>
 						{activeTab === 'query' ? (
 							<p>Consulte o palpite cadastrado usando a tag do Instagram.</p>
+						) : activeTab === 'results' ? (
+							<p>Veja os jogos encerrados e acompanhe o replay dos sorteios.</p>
 						) : isPollClosed ? (
 							<p>Palpites encerrados, volte depois para o proximo jogo.</p>
 						) : (
@@ -445,7 +624,7 @@ export function CupPollApp() {
 							) : null}
 						</form>
 						)
-					) : (
+					) : activeTab === 'query' ? (
 						<form
 							aria-labelledby="poll-query-tab"
 							className="poll-form"
@@ -482,6 +661,89 @@ export function CupPollApp() {
 								</p>
 							) : null}
 						</form>
+					) : (
+						<div
+							aria-labelledby="poll-results-tab"
+							className="results-list"
+							id="poll-results-panel"
+							role="tabpanel"
+						>
+							{isLoadingResults ? (
+								<p className="form-message form-message--success" role="status">
+									Carregando resultados...
+								</p>
+							) : null}
+
+							{resultsError ? (
+								<p className="form-message form-message--error" role="status">
+									{resultsError}
+								</p>
+							) : null}
+
+							{!isLoadingResults && !resultsError && pollResults.length === 0 ? (
+								<p className="form-message form-message--success" role="status">
+									Nenhum resultado publicado ainda.
+								</p>
+							) : null}
+
+							{pollResults.map(result => {
+								const isExpanded = expandedMatch === result.match;
+								const isReplayActive = replayState.match === result.match;
+
+								return (
+									<article className="result-card" key={result.match}>
+										<button
+											aria-expanded={isExpanded}
+											className="result-card__summary"
+											onClick={() => handleExpandResult(result.match)}
+											type="button"
+										>
+											<span>{getMatchName(result.match)}</span>
+											<strong>{result.result}</strong>
+										</button>
+
+										{isExpanded ? (
+											<div className="result-card__details">
+												<div className="winner-line">
+													<span>Primeiro ganhador</span>
+													<strong>{result['first-winner'] ?? 'Aguardando'}</strong>
+												</div>
+
+												<button
+													className="submit-button"
+													disabled={replayState.isRunning}
+													onClick={() => handleReplay(result)}
+													type="button"
+												>
+													{replayState.isRunning && isReplayActive
+														? 'Reproduzindo...'
+														: 'Ver replay do sorteio'}
+												</button>
+
+												<div className="participants-list" aria-label="Participantes do sorteio">
+													{result.participants.map((participant, index) => (
+														<span
+															className={`participant-chip${
+																isReplayActive && replayState.highlightedIndex === index
+																	? ' participant-chip--active'
+																	: ''
+															}${
+																participant === result['second-winner']
+																	? ' participant-chip--winner'
+																	: ''
+															}`}
+															key={`${result.match}-${participant}-${index}`}
+														>
+															{participant}
+														</span>
+													))}
+												</div>
+											</div>
+										) : null}
+									</article>
+								);
+							})}
+						</div>
 					)}
 				</section>
 			</div>
