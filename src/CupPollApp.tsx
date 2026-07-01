@@ -26,6 +26,16 @@ type CupPollResult = {
 	participants: string[];
 };
 
+type RawCupPollResult = {
+	firstWinner?: unknown;
+	match?: unknown;
+	participants?: unknown;
+	result?: unknown;
+	secondWinner?: unknown;
+	'first-winner'?: unknown;
+	'second-winner'?: unknown;
+};
+
 type ReplayState = {
 	highlightedIndex: number;
 	isRunning: boolean;
@@ -86,6 +96,48 @@ function normalizeInstagramHandle(value: string) {
 
 function isValidInstagramHandle(value: string) {
 	return /^@[A-Za-z0-9._-]{1,30}$/.test(value);
+}
+
+function normalizeNullableText(value: unknown) {
+	return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function normalizeCupPollResults(value: unknown) {
+	if (!Array.isArray(value)) {
+		return null;
+	}
+
+	return value.reduce<CupPollResult[]>((results, item) => {
+		if (!item || typeof item !== 'object') {
+			return results;
+		}
+
+		const rawResult = item as RawCupPollResult;
+		const match = typeof rawResult.match === 'string' ? rawResult.match.trim() : '';
+		const result = typeof rawResult.result === 'string' ? rawResult.result.trim() : '';
+
+		if (!match || !result) {
+			return results;
+		}
+
+		results.push({
+			'first-winner': normalizeNullableText(
+				rawResult['first-winner'] ?? rawResult.firstWinner,
+			),
+			match,
+			participants: Array.isArray(rawResult.participants)
+				? rawResult.participants.filter(
+						participant => typeof participant === 'string' && participant.trim(),
+					)
+				: [],
+			result,
+			'second-winner': normalizeNullableText(
+				rawResult['second-winner'] ?? rawResult.secondWinner,
+			),
+		});
+
+		return results;
+	}, []);
 }
 
 function getStoredGuesses() {
@@ -177,25 +229,27 @@ export function CupPollApp() {
 					method: 'GET',
 				});
 				const responsePayload = (await response.json().catch(() => null)) as
-					| CupPollResult[]
 					| { error?: string }
-					| null;
+					| unknown;
 
 				if (shouldIgnore) {
 					return;
 				}
 
-				if (!response.ok || !Array.isArray(responsePayload)) {
+				const parsedResults = normalizeCupPollResults(responsePayload);
+
+				if (!response.ok || !parsedResults) {
 					setResultsError(
-						Array.isArray(responsePayload)
+						parsedResults
 							? 'Nao foi possivel carregar os resultados.'
-							: responsePayload?.error ?? 'Nao foi possivel carregar os resultados.',
+							: (responsePayload as { error?: string } | null)?.error ??
+									'Nao foi possivel carregar os resultados.',
 					);
 					setHasLoadedResults(true);
 					return;
 				}
 
-				setPollResults(responsePayload);
+				setPollResults(parsedResults);
 				setHasLoadedResults(true);
 			} catch {
 				if (!shouldIgnore) {
@@ -228,6 +282,7 @@ export function CupPollApp() {
 		const teamNames: Record<string, string> = {
 			br: 'Brasil',
 			jp: 'Japao',
+			mr: 'Marrocos',
 		};
 		const [homeTeam, awayTeam] = match.split('-');
 
@@ -707,6 +762,11 @@ export function CupPollApp() {
 												<div className="winner-line">
 													<span>Primeiro ganhador</span>
 													<strong>{result['first-winner'] ?? 'Aguardando'}</strong>
+												</div>
+
+												<div className="winner-line">
+													<span>Segundo ganhador</span>
+													<strong>{result['second-winner'] ?? 'Aguardando'}</strong>
 												</div>
 
 												<button
