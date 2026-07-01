@@ -282,6 +282,7 @@ export function CupPollApp() {
 	function getMatchName(match: string) {
 		const teamNames: Record<string, string> = {
 			br: 'Brasil',
+			ht: 'Haiti',
 			jp: 'Japao',
 			mr: 'Marrocos',
 		};
