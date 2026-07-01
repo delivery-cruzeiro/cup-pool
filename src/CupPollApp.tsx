@@ -309,7 +309,7 @@ export function CupPollApp() {
 			window.clearTimeout(replayTimerRef.current);
 		}
 
-		if (result.participants.length === 0) {
+		if (!result['second-winner'] || result.participants.length === 0) {
 			setReplayState({
 				highlightedIndex: 0,
 				isRunning: false,
@@ -745,6 +745,8 @@ export function CupPollApp() {
 							{pollResults.map(result => {
 								const isExpanded = expandedMatch === result.match;
 								const isReplayActive = replayState.match === result.match;
+								const hasFirstWinner = Boolean(result['first-winner']);
+								const hasSecondWinner = Boolean(result['second-winner']);
 
 								return (
 									<article className="result-card" key={result.match}>
@@ -760,45 +762,53 @@ export function CupPollApp() {
 
 										{isExpanded ? (
 											<div className="result-card__details">
-												<div className="winner-line">
-													<span>Primeiro ganhador</span>
-													<strong>{result['first-winner'] ?? 'Aguardando'}</strong>
-												</div>
+												{hasFirstWinner ? (
+													<div className="winner-line">
+														<span>Primeiro ganhador</span>
+														<strong>{result['first-winner']}</strong>
+													</div>
+												) : null}
 
-												<div className="winner-line">
-													<span>Segundo ganhador</span>
-													<strong>{result['second-winner'] ?? 'Aguardando'}</strong>
-												</div>
+												{hasSecondWinner ? (
+													<div className="winner-line">
+														<span>Segundo ganhador</span>
+														<strong>{result['second-winner']}</strong>
+													</div>
+												) : null}
 
-												<button
-													className="submit-button"
-													disabled={replayState.isRunning}
-													onClick={() => handleReplay(result)}
-													type="button"
-												>
-													{replayState.isRunning && isReplayActive
-														? 'Reproduzindo...'
-														: 'Ver replay do sorteio'}
-												</button>
+												{hasSecondWinner ? (
+													<button
+														className="submit-button"
+														disabled={replayState.isRunning}
+														onClick={() => handleReplay(result)}
+														type="button"
+													>
+														{replayState.isRunning && isReplayActive
+															? 'Reproduzindo...'
+															: 'Ver replay do sorteio'}
+													</button>
+												) : null}
 
-												<div className="participants-list" aria-label="Participantes do sorteio">
-													{result.participants.map((participant, index) => (
-														<span
-															className={`participant-chip${
-																isReplayActive && replayState.highlightedIndex === index
-																	? ' participant-chip--active'
-																	: ''
-															}${
-																participant === result['second-winner']
-																	? ' participant-chip--winner'
-																	: ''
-															}`}
-															key={`${result.match}-${participant}-${index}`}
-														>
-															{participant}
-														</span>
-													))}
-												</div>
+												{hasSecondWinner ? (
+													<div className="participants-list" aria-label="Participantes do sorteio">
+														{result.participants.map((participant, index) => (
+															<span
+																className={`participant-chip${
+																	isReplayActive && replayState.highlightedIndex === index
+																		? ' participant-chip--active'
+																		: ''
+																}${
+																	participant === result['second-winner']
+																		? ' participant-chip--winner'
+																		: ''
+																}`}
+																key={`${result.match}-${participant}-${index}`}
+															>
+																{participant}
+															</span>
+														))}
+													</div>
+												) : null}
 											</div>
 										) : null}
 									</article>
