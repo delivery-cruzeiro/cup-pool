@@ -209,11 +209,11 @@ export function CupPollApp() {
 	}, [isPollClosed]);
 
 	useEffect(() => {
-		if (activeTab !== 'results' || hasLoadedResults || isLoadingResults) {
+		if (activeTab !== 'results' || hasLoadedResults) {
 			return;
 		}
 
-		let shouldIgnore = false;
+		const abortController = new AbortController();
 
 		async function loadResults() {
 			setIsLoadingResults(true);
@@ -227,12 +227,13 @@ export function CupPollApp() {
 						'x-requested-with': 'XMLHttpRequest',
 					},
 					method: 'GET',
+					signal: abortController.signal,
 				});
 				const responsePayload = (await response.json().catch(() => null)) as
 					| { error?: string }
 					| unknown;
 
-				if (shouldIgnore) {
+				if (abortController.signal.aborted) {
 					return;
 				}
 
@@ -252,12 +253,12 @@ export function CupPollApp() {
 				setPollResults(parsedResults);
 				setHasLoadedResults(true);
 			} catch {
-				if (!shouldIgnore) {
+				if (!abortController.signal.aborted) {
 					setResultsError('Nao foi possivel conectar ao servidor.');
 					setHasLoadedResults(true);
 				}
 			} finally {
-				if (!shouldIgnore) {
+				if (!abortController.signal.aborted) {
 					setIsLoadingResults(false);
 				}
 			}
@@ -266,9 +267,9 @@ export function CupPollApp() {
 		void loadResults();
 
 		return () => {
-			shouldIgnore = true;
+			abortController.abort();
 		};
-	}, [activeTab, hasLoadedResults, isLoadingResults]);
+	}, [activeTab, hasLoadedResults]);
 
 	useEffect(() => {
 		return () => {
