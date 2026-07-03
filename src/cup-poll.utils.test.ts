@@ -6,7 +6,7 @@ describe('createCupPollGuessSchema', () => {
 		const result = createCupPollGuessSchema.safeParse({
 			brScore: 2,
 			instagramHandle: '@nome-teste',
-			jpScore: 1,
+			noScore: 1,
 		});
 
 		expect(result.success).toBe(true);
@@ -16,7 +16,7 @@ describe('createCupPollGuessSchema', () => {
 		const result = createCupPollGuessSchema.safeParse({
 			brScore: 2,
 			instagramHandle: 'nome-teste',
-			jpScore: 1,
+			noScore: 1,
 		});
 
 		expect(result.success).toBe(false);

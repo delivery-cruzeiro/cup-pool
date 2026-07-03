@@ -54,7 +54,7 @@ const initialQueryState: QueryState = {
 
 const productionAPIURL = 'https://backend-api-yynv.onrender.com';
 const defaultAPIURL = import.meta.env.PROD ? productionAPIURL : '';
-const pollClosesAt = new Date('2026-06-29T14:00:00-03:00').getTime();
+const pollClosesAt = new Date('2026-07-05T17:00:00-03:00').getTime();
 const localGuessesStorageKey = 'cup-poll-guesses';
 
 function hasPollClosed() {
@@ -175,7 +175,7 @@ export function CupPollApp() {
 	const [activeTab, setActiveTab] = useState<PollTab>('guess');
 	const [instagramHandle, setInstagramHandle] = useState('');
 	const [brScore, setBrScore] = useState('');
-	const [jpScore, setJpScore] = useState('');
+	const [noScore, setNoScore] = useState('');
 	const [submitState, setSubmitState] = useState<SubmitState>(initialSubmitState);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [queryInstagramHandle, setQueryInstagramHandle] = useState('');
@@ -285,6 +285,7 @@ export function CupPollApp() {
 			ht: 'Haiti',
 			jp: 'Japao',
 			mr: 'Marrocos',
+			no: 'Noruega',
 		};
 		const [homeTeam, awayTeam] = match.split('-');
 
@@ -365,7 +366,7 @@ export function CupPollApp() {
 		const payload = {
 			brScore: parseScore(brScore),
 			instagramHandle: normalizeInstagramHandle(instagramHandle).toLowerCase(),
-			jpScore: parseScore(jpScore),
+			noScore: parseScore(noScore),
 		};
 		const parsedPayload = createCupPollGuessSchema.safeParse(payload);
 
@@ -414,7 +415,7 @@ export function CupPollApp() {
 			}
 			setInstagramHandle('');
 			setBrScore('');
-			setJpScore('');
+			setNoScore('');
 		} catch {
 			setSubmitState({
 				message: 'Nao foi possivel conectar ao servidor.',
@@ -594,7 +595,7 @@ export function CupPollApp() {
 
 					<div className="poll-card__header">
 						<span className="poll-eyebrow">Palpite Certo</span>
-						<h1 id="poll-title">Brasil x Japao</h1>
+						<h1 id="poll-title">Brasil x Noruega</h1>
 						{activeTab === 'query' ? (
 							<p>Consulte o palpite cadastrado usando a tag do Instagram.</p>
 						) : activeTab === 'results' ? (
@@ -603,7 +604,7 @@ export function CupPollApp() {
 							<p>Palpites encerrados, volte depois para o proximo jogo.</p>
 						) : (
 							<p>
-								Informe seu palpite do jogo Brasil e Japao e concorra a um lanche gratuito
+								Informe seu palpite do jogo Brasil e Noruega e concorra a um lanche gratuito
 								do Pastel do Cruzeiro.
 							</p>
 						)}
@@ -653,18 +654,18 @@ export function CupPollApp() {
 								<div className="score-team score-team--away">
 									<label className="score-input">
 										<input
-											aria-label="Gols do Japao"
+											aria-label="Gols da Noruega"
 											inputMode="numeric"
 											min="0"
-											onChange={event => setJpScore(normalizeScoreInput(event.target.value))}
+											onChange={event => setNoScore(normalizeScoreInput(event.target.value))}
 											pattern="[0-9]*"
 											placeholder="0"
 											type="text"
-											value={jpScore}
+											value={noScore}
 										/>
 										<span className="score-country" aria-hidden="true">
-											<span className="score-code">JP</span>
-											<span className="score-flag">JP</span>
+											<span className="score-code">NO</span>
+											<span className="score-flag">NO</span>
 										</span>
 									</label>
 								</div>
