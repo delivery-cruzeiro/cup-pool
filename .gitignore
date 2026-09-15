@@ -3,3 +3,13 @@ dist
 coverage
 .env
 .env.local
+
+# Machine-local dependencies and credentials
+node_modules/
+node_modules.*/
+.pnpm-store/
+dist/
+coverage/
+.env*
+!.env.example
+*.log

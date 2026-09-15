@@ -1,6 +1,6 @@
 {
   "name": "@delivery-cruzeiro/cup-pool",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,5 +24,6 @@
     "vite": "^7.1.11",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.17"
-  }
+  },
+  "packageManager": "pnpm@11.24.0"
 }

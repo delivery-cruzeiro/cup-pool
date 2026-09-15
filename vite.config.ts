@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+ base: '/_apps/cup-pool/',
 	plugins: [react(), tsconfigPaths()],
 	server: {
 		host: true,
@@ -10,7 +11,7 @@ export default defineConfig({
 		proxy: {
 			'/api': {
 				changeOrigin: true,
-				target: 'http://host.docker.internal:4000',
+				target: 'http://backend-api:4000',
 			},
 		},
 		watch: {

@@ -52,8 +52,7 @@ const initialQueryState: QueryState = {
 	type: 'idle',
 };
 
-const productionAPIURL = 'https://backend-api-yynv.onrender.com';
-const defaultAPIURL = import.meta.env.PROD ? productionAPIURL : '';
+const defaultAPIURL = '';
 const pollClosesAt = new Date('2026-07-05T17:00:00-03:00').getTime();
 const localGuessesStorageKey = 'cup-poll-guesses';
 

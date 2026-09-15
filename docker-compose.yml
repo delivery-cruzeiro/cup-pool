@@ -1,18 +1,7 @@
 services:
   cup-pool:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: delivery-cruzeiro-cup-pool
-    command: npm run dev
+    image: ghcr.io/delivery-cruzeiro/cup-pool:0.2.0
+    build: .
     ports:
-      - '5176:5176'
-    volumes:
-      - .:/app
-      - cup-pool-node-modules:/app/node_modules
-    environment:
-      CI: 'true'
-      PNPM_CONFIG_CONFIRM_MODULES_PURGE: 'false'
-
-volumes:
-  cup-pool-node-modules:
+      - '${PORT:-8080}:8080'
+    restart: unless-stopped

@@ -1,3 +1,4 @@
+import './application-boundary';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CupPollApp } from './CupPollApp';
